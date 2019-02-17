@@ -2,6 +2,7 @@ package cosmos
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"net/http"
 	"reflect"
@@ -101,6 +102,7 @@ func (c *Client) create(body, ret interface{}, opts ...CallOption) (*Response, e
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(string(data))
 	buf := bytes.NewBuffer(data)
 	return c.method(http.MethodPost, expectStatusCodeXX(http.StatusOK), ret, buf, opts...)
 }
@@ -187,6 +189,9 @@ func (c *Client) apply(r *Request, opts []CallOption) (err error) {
 }
 
 func (c *Client) CreateIDIfNotSet(doc interface{}) {
+	if reflect.TypeOf(doc).String() == "string" {
+		return
+	}
 	id := reflect.ValueOf(doc).Elem().FieldByName("ID")
 	if id.IsValid() && id.String() == "" {
 		id.SetString(uuid.New().String())

@@ -95,6 +95,6 @@ func (d *Document) Replace(doc interface{}, opts ...CallOption) (*Response, erro
 	return d.client.replace(doc, &doc, opts...)
 }
 
-func (d Document) Delete() (*Response, error) {
-	return d.client.delete()
+func (d Document) Delete(opts ...CallOption) (*Response, error) {
+	return d.client.delete(opts...)
 }

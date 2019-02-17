@@ -37,12 +37,18 @@ func (d DatabaseDefinitions) First() *DatabaseDefinition {
 // CollectionDefinition defiens the structure of a Collection
 type CollectionDefinition struct {
 	Resource
-	IndexingPolicy IndexingPolicy `json:"indexingPolicy,omitempty"`
-	Docs           string         `json:"_docs,omitempty"`
-	Udf            string         `json:"_udfs,omitempty"`
-	Sporcs         string         `json:"_sporcs,omitempty"`
-	Triggers       string         `json:"_triggers,omitempty"`
-	Conflicts      string         `json:"_conflicts,omitempty"`
+	IndexingPolicy IndexingPolicy         `json:"indexingPolicy,omitempty"`
+	PartitionKey   PartitionKeyDefinition `json:"partitionKey"`
+	Docs           string                 `json:"_docs,omitempty"`
+	Udf            string                 `json:"_udfs,omitempty"`
+	Sporcs         string                 `json:"_sporcs,omitempty"`
+	Triggers       string                 `json:"_triggers,omitempty"`
+	Conflicts      string                 `json:"_conflicts,omitempty"`
+}
+
+type PartitionKeyDefinition struct {
+	Paths []string `json:"paths"`
+	Kind  string   `json:"kind"`
 }
 
 // Collections slice of Collection elements
