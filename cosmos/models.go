@@ -99,3 +99,11 @@ type Trigger struct {
 	TriggerOperation string `json:"triggerOperation"`
 	TriggerType      string `json:"triggerType"`
 }
+
+type MsToken struct {
+	Token string `json:"token"`
+	Range struct {
+		Min string `json:"min"`
+		Max string `json:"max"`
+	} `json:"range"`
+}
