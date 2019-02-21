@@ -45,6 +45,16 @@ func PartitionKey(partitionKey interface{}) CallOption {
 	}
 }
 
+func Continuation(continuation string) CallOption {
+	return func(r *Request) error {
+		if continuation == "" {
+			return nil
+		}
+		r.Header.Set(HeaderContinuation, continuation)
+		return nil
+	}
+}
+
 // Upsert if set to true, Cosmos DB creates the document with the ID (and partition key value if applicable) if it doesn’t exist, or update the document if it exists.
 func Upsert() CallOption {
 	return func(r *Request) error {
