@@ -28,7 +28,7 @@ func (c *Collection) UDFs() *UDFs {
 	return newUDFs(c)
 }
 
-func (c *Collection) StoredProcedure(id string) *StoredProcedure {
+func (c Collection) StoredProcedure(id string) *StoredProcedure {
 	return newStoredProcedure(c, id)
 }
 
