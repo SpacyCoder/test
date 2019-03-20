@@ -11,7 +11,7 @@ type StoredProcedures struct {
 	coll   *Collection
 }
 
-func newStoredProcedure(coll *Collection, storedProcedureID string) *StoredProcedure {
+func newStoredProcedure(coll Collection, storedProcedureID string) *StoredProcedure {
 	coll.client.fullPath = coll.client.fullPath + "/sprocs/" + storedProcedureID
 	coll.client.postFix = coll.client.postFix + "/sprocs/" + storedProcedureID
 	coll.client.rType = "sprocs"
