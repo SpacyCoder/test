@@ -2,7 +2,7 @@ package cosmos
 
 type StoredProcedure struct {
 	client            Client
-	coll              *Collection
+	coll              Collection
 	storedProcedureID string
 }
 
