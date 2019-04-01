@@ -79,6 +79,5 @@ func (s *StoredProcedure) Delete(opts ...CallOption) (*Response, error) {
 
 // Execute stored procedure
 func (s *StoredProcedure) Execute(params, body interface{}, opts ...CallOption) error {
-	_, err := s.client.execute(params, &body, opts...)
-	return err
+	return s.client.execute(params, &body, opts...)
 }
