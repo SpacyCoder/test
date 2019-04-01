@@ -158,7 +158,7 @@ func (c *Client) do(r *Request, validator statusCodeValidatorFunc, respBody inte
 	if !validator(resp.StatusCode) {
 		err = &RequestError{}
 		readJSON(resp.Body, &err)
-		return nil, err
+		return &Response{resp.Header}, err
 	}
 
 	defer resp.Body.Close()
