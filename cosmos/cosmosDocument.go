@@ -38,10 +38,9 @@ type ListCosmosDocument struct {
 }
 
 func newDocument(coll Collection, docID string) *Document {
-	coll.client.fullPath = coll.client.fullPath + "/docs/" + docID
-	coll.client.postFix = coll.client.postFix + "/docs/" + docID
+	coll.client.path += "/docs/" + docID
 	coll.client.rType = "docs"
-	coll.client.rID = coll.client.postFix
+	coll.client.rLink = coll.client.path
 	doc := &Document{
 		client: coll.client,
 		coll:   coll,
@@ -52,9 +51,8 @@ func newDocument(coll Collection, docID string) *Document {
 }
 
 func newDocuments(coll Collection) *Documents {
-	coll.client.fullPath = coll.client.fullPath + "/docs"
+	coll.client.path += "/docs"
 	coll.client.rType = "docs"
-	coll.client.rID = coll.client.postFix
 	docs := &Documents{
 		client: coll.client,
 		coll:   coll,
@@ -64,7 +62,7 @@ func newDocuments(coll Collection) *Documents {
 }
 
 func (d *Documents) Create(doc interface{}, opts ...CallOption) (*Response, error) {
-	d.client.CreateIDIfNotSet(doc)
+	d.client.createIDIfNotSet(doc)
 	return d.client.create(doc, &doc, opts...)
 }
 
@@ -91,7 +89,7 @@ func (d Documents) Query(query *SqlQuerySpec, docs interface{}, opts ...CallOpti
 }
 
 func (d *Document) Replace(doc interface{}, opts ...CallOption) (*Response, error) {
-	d.client.CreateIDIfNotSet(doc)
+	d.client.createIDIfNotSet(doc)
 	return d.client.replace(doc, &doc, opts...)
 }
 

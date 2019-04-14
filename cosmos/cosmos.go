@@ -2,6 +2,7 @@ package cosmos
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -15,12 +16,16 @@ import (
 // Client struct is the main struct
 type Client struct {
 	key        string
-	basePath   string
-	fullPath   string
-	postFix    string
+	domain     string
+	url        string
+	path       string
 	httpClient *http.Client
-	rType      string
-	rID        string
+	rType      string // dbs,colls,docs,udfs
+	rLink      string
+}
+
+func (c *Client) getURL() string {
+	return c.domain + c.path
 }
 
 var buffers = &sync.Pool{
@@ -30,12 +35,18 @@ var buffers = &sync.Pool{
 }
 
 // New create a new CosmosDB instance
-func New(connString string) Client {
+func New(connString string) (*Client, error) {
 	array := strings.Split(connString, ";")
 	path := strings.TrimPrefix(array[0], "AccountEndpoint=")
+	if path == "" {
+		return nil, errors.New("Invalid connection string")
+	}
 	key := strings.TrimPrefix(array[1], "AccountKey=")
+	if key == "" {
+		return nil, errors.New("Invalid connection string")
+	}
 	httpClient := &http.Client{}
-	return Client{key, path, path, "", httpClient, "", ""}
+	return &Client{key, path, path, "", httpClient, "", ""}, nil
 }
 
 // Database returns a new Database struct that contains the opertaions you can do on single database
@@ -62,12 +73,12 @@ func (c *Client) query(query *SqlQuerySpec, body interface{}, opts ...CallOption
 		return nil, err
 	}
 
-	req, err = http.NewRequest(http.MethodPost, c.fullPath, buf)
+	req, err = http.NewRequest(http.MethodPost, c.getURL(), buf)
 	if err != nil {
 		return nil, err
 	}
 
-	r := ResourceRequest(c.rID, c.rType, req)
+	r := ResourceRequest(c.rLink, c.rType, req)
 	if err = c.apply(r, opts); err != nil {
 		return nil, err
 	}
@@ -123,12 +134,12 @@ func (c *Client) delete(opts ...CallOption) (*Response, error) {
 }
 
 func (c *Client) method(method string, validator statusCodeValidatorFunc, ret interface{}, data *bytes.Buffer, opts ...CallOption) (*Response, error) {
-	req, err := http.NewRequest(method, c.fullPath, data)
+	req, err := http.NewRequest(method, c.getURL(), data)
 	if err != nil {
 		return nil, err
 	}
 
-	r := ResourceRequest(c.rID, c.rType, req)
+	r := ResourceRequest(c.rLink, c.rType, req)
 	if err = c.apply(r, opts); err != nil {
 		return nil, err
 	}
@@ -151,10 +162,6 @@ func (c *Client) do(r *Request, validator statusCodeValidatorFunc, respBody inte
 	if err != nil {
 		return nil, err
 	}
-	/* 	if r.Request.Method == "PUT" {
-		body, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("BODY: %+v", string(body))
-	} */
 	if !validator(resp.StatusCode) {
 		err = &RequestError{}
 		readJSON(resp.Body, &err)
@@ -188,7 +195,7 @@ func (c *Client) apply(r *Request, opts []CallOption) (err error) {
 	return nil
 }
 
-func (c *Client) CreateIDIfNotSet(doc interface{}) {
+func (c *Client) createIDIfNotSet(doc interface{}) {
 	if reflect.TypeOf(doc).String() == "string" {
 		return
 	}

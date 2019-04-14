@@ -27,10 +27,9 @@ type Databases struct {
 }
 
 func newDatabase(client Client, dbID string) *Database {
-	client.fullPath = client.basePath + "dbs/" + dbID
-	client.postFix = "dbs/" + dbID
-	client.rID = "dbs/" + dbID
+	client.path = "dbs/" + dbID
 	client.rType = "dbs"
+	client.rLink = "dbs/" + dbID
 	db := &Database{
 		client: client,
 		dbID:   dbID,
@@ -40,10 +39,10 @@ func newDatabase(client Client, dbID string) *Database {
 }
 
 func newDatabases(c *Client) *Databases {
-	c.fullPath = c.basePath + "dbs"
-	c.postFix = "dbs"
+	c.path = "dbs"
 	c.rType = "dbs"
-	c.rID = ""
+	c.rLink = ""
+
 	dbs := &Databases{
 		client: c,
 	}
@@ -60,8 +59,13 @@ func (db Database) Collections() *Collections {
 }
 
 // Create a new database
-func (db Databases) Create(body interface{}, opts ...CallOption) (*DatabaseDefinition, error) {
+func (db Databases) Create(dbID string, opts ...CallOption) (*DatabaseDefinition, error) {
 	dbDef := &DatabaseDefinition{}
+	var body struct {
+		ID string `json:"id"`
+	}
+	body.ID = dbID
+
 	_, err := db.client.create(body, dbDef, opts...)
 	if err != nil {
 		return nil, err

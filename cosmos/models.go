@@ -34,6 +34,10 @@ func (d DatabaseDefinitions) First() *DatabaseDefinition {
 	return &d[0]
 }
 
+func (d *DatabaseDefinitions) Length() int {
+	return len(*d)
+}
+
 // CollectionDefinition defiens the structure of a Collection
 type CollectionDefinition struct {
 	Resource
@@ -51,13 +55,8 @@ type PartitionKeyDefinition struct {
 	Kind  string   `json:"kind"`
 }
 
-// Collections slice of Collection elements
+// CollectionDefinitions is a slice of CollectionDefinition elements
 type CollectionDefinitions []CollectionDefinition
-
-type CollectionsResponse struct {
-	Collections CollectionDefinition `json:"Collections,omitempty"`
-	Count       int                  `json:"_count,omitempty"`
-}
 
 // First returns first database in slice
 func (c CollectionDefinitions) First() *CollectionDefinition {
@@ -65,6 +64,19 @@ func (c CollectionDefinitions) First() *CollectionDefinition {
 		return nil
 	}
 	return &c[0]
+}
+
+func (c *CollectionDefinitions) Length() int {
+	return len(*c)
+}
+
+func (c CollectionDefinitions) At(index int) *CollectionDefinition {
+	return &c[index]
+}
+
+type CollectionsResponse struct {
+	Collections CollectionDefinition `json:"Collections,omitempty"`
+	Count       int                  `json:"_count,omitempty"`
 }
 
 // DocumentDefinition is the struct of a document
@@ -106,4 +118,14 @@ type MsToken struct {
 		Min string `json:"min"`
 		Max string `json:"max"`
 	} `json:"range"`
+}
+
+type QueryParam struct {
+	Name  string      `json:"name"`
+	Value interface{} `json:"value"`
+}
+
+type SqlQuerySpec struct {
+	Query      string       `json:"query"`
+	Parameters []QueryParam `json:"parameters"`
 }

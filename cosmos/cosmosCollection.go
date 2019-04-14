@@ -20,11 +20,11 @@ func (c Collection) Documents() *Documents {
 	return newDocuments(c)
 }
 
-func (c *Collection) UDF(id string) *UDF {
+func (c Collection) UDF(id string) *UDF {
 	return newUDF(c, id)
 }
 
-func (c *Collection) UDFs() *UDFs {
+func (c Collection) UDFs() *UDFs {
 	return newUDFs(c)
 }
 
@@ -32,15 +32,14 @@ func (c Collection) StoredProcedure(id string) *StoredProcedure {
 	return newStoredProcedure(c, id)
 }
 
-func (c *Collection) StoredProcedures() *StoredProcedures {
+func (c Collection) StoredProcedures() *StoredProcedures {
 	return newStoredProcedures(c)
 }
 
 func newCollection(db Database, collID string) *Collection {
-	db.client.fullPath = db.client.fullPath + "/colls/" + collID
-	db.client.postFix = db.client.postFix + "/colls/" + collID
+	db.client.path += "/colls/" + collID
 	db.client.rType = "colls"
-	db.client.rID = db.client.postFix
+	db.client.rLink = db.client.path
 	coll := &Collection{
 		client: db.client,
 		db:     db,
@@ -51,8 +50,7 @@ func newCollection(db Database, collID string) *Collection {
 }
 
 func newCollections(db Database) *Collections {
-	db.client.fullPath = db.client.fullPath + "/colls"
-	db.client.postFix = db.client.postFix + "/colls"
+	db.client.path += "/colls"
 	db.client.rType = "colls"
 	coll := &Collections{
 		client: db.client,

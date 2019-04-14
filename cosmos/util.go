@@ -1,31 +1,27 @@
 package cosmos
 
-type QueryParam struct {
-	Name  string      `json:"name"`
-	Value interface{} `json:"value"`
-}
-
-type SqlQuerySpec struct {
-	Query      string       `json:"query"`
-	Parameters []QueryParam `json:"parameters"`
-}
-
-func NewQuery(query string, queryParams ...QueryParam) *SqlQuerySpec {
+func Q(query string, queryParams ...QueryParam) *SqlQuerySpec {
 	return &SqlQuerySpec{Query: query, Parameters: queryParams}
 }
 
-type Coordinates [][2]float64
+type P = QueryParam
+
+// Coordinate = [lon, lat]
+type Coordinate [2]float64
+
+type Coordinates []Coordinate
 
 type LineString struct {
 	Type        string      `json:"type"`
 	Coordinates Coordinates `json:"coordinates"`
 }
 
-func NewLineString() *LineString {
-	line := &LineString{Type: "LineString", Coordinates: Coordinates{}}
+func NewLineString(coords ...Coordinate) *LineString {
+	line := &LineString{Type: "LineString", Coordinates: coords}
 	return line
 }
 
-func (l *LineString) AddPoint(coords [2]float64) {
-	l.Coordinates = append(l.Coordinates, coords)
+// AddPoint is a helper method for adding point to a LineString
+func (l *LineString) AddPoint(lon, lat float64) {
+	l.Coordinates = append(l.Coordinates, Coordinate{lon, lat})
 }

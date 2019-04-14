@@ -1,6 +1,9 @@
 package cosmos
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strconv"
+)
 
 // Consistency type to define consistency levels
 type Consistency string
@@ -22,11 +25,9 @@ const (
 type CallOption func(r *Request) error
 
 func PartitionKey(partitionKey interface{}) CallOption {
+	var pk []byte
+	var err error
 
-	var (
-		pk  []byte
-		err error
-	)
 	switch v := partitionKey.(type) {
 	case json.Marshaler:
 		pk, err = Serialization.Marshal(v)
@@ -67,6 +68,74 @@ func Upsert() CallOption {
 func CrossPartition() CallOption {
 	return func(r *Request) error {
 		r.Header.Set(HeaderCrossPartition, "true")
+		return nil
+	}
+}
+
+// ChangeFeedPartitionRangeID used in change feed requests. The partition key range ID for reading data.
+func ChangeFeedPartitionRangeID(id string) CallOption {
+	return func(r *Request) error {
+		r.Header.Set(HeaderPartitionKeyRangeID, id)
+		return nil
+	}
+}
+
+// ChangeFeed indicates a change feed request
+func ChangeFeed() CallOption {
+	return func(r *Request) error {
+		r.Header.Set(HeaderAIM, "Incremental feed")
+		return nil
+	}
+}
+
+// IfModifiedSince returns etag of resource modified after specified date in RFC 1123 format. Ignored when If-None-Match is specified
+// Optional (applicable only on GET)
+func IfModifiedSince(date string) CallOption {
+	return func(r *Request) error {
+		r.Header.Set(HeaderIfModifiedSince, date)
+		return nil
+	}
+}
+
+// IfNoneMatch makes operation conditional to only execute if the resource has changed. The value should be the etag of the resource.
+// Optional (applicable only on GET)
+func IfNoneMatch(etag string) CallOption {
+	return func(r *Request) error {
+		r.Header.Set(HeaderIfNonMatch, etag)
+		return nil
+	}
+}
+
+// IfMatch used to make operation conditional for optimistic concurrency. The value should be the etag value of the resource.
+// (applicable only on PUT and DELETE)
+func IfMatch(etag string) CallOption {
+	return func(r *Request) error {
+		r.Header.Set(HeaderIfMatch, etag)
+		return nil
+	}
+}
+
+// SessionToken a string token used with session level consistency.
+func SessionToken(sessionToken string) CallOption {
+	return func(r *Request) error {
+		r.Header.Set(HeaderSessionToken, sessionToken)
+		return nil
+	}
+}
+
+// ConsistencyLevel override for read options against documents and attachments. The valid values are: Strong, Bounded, Session, or Eventual (in order of strongest to weakest). The override must be the same or weaker than the account�s configured consistency level.
+func ConsistencyLevel(consistency Consistency) CallOption {
+	return func(r *Request) error {
+		r.Header.Set(HeaderConsistency, string(consistency))
+		return nil
+	}
+}
+
+// Limit set max item count for response
+func Limit(limit int) CallOption {
+	header := strconv.Itoa(limit)
+	return func(r *Request) error {
+		r.Header.Set(HeaderMaxItemCount, header)
 		return nil
 	}
 }

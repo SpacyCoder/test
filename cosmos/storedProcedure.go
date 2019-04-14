@@ -8,14 +8,13 @@ type StoredProcedure struct {
 
 type StoredProcedures struct {
 	client Client
-	coll   *Collection
+	coll   Collection
 }
 
 func newStoredProcedure(coll Collection, storedProcedureID string) *StoredProcedure {
-	coll.client.fullPath = coll.client.fullPath + "/sprocs/" + storedProcedureID
-	coll.client.postFix = coll.client.postFix + "/sprocs/" + storedProcedureID
+	coll.client.path = coll.client.path + "/sprocs/" + storedProcedureID
 	coll.client.rType = "sprocs"
-	coll.client.rID = coll.client.postFix
+	coll.client.rLink = coll.client.path
 	udf := &StoredProcedure{
 		client:            coll.client,
 		coll:              coll,
@@ -25,10 +24,9 @@ func newStoredProcedure(coll Collection, storedProcedureID string) *StoredProced
 	return udf
 }
 
-func newStoredProcedures(coll *Collection) *StoredProcedures {
-	coll.client.fullPath = coll.client.fullPath + "/sprocs"
+func newStoredProcedures(coll Collection) *StoredProcedures {
+	coll.client.path += "/sprocs"
 	coll.client.rType = "sprocs"
-	coll.client.rID = coll.client.postFix
 	udfs := &StoredProcedures{
 		client: coll.client,
 		coll:   coll,

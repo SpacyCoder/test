@@ -2,20 +2,19 @@ package cosmos
 
 type UDF struct {
 	client Client
-	coll   *Collection
+	coll   Collection
 	udfID  string
 }
 
 type UDFs struct {
 	client Client
-	coll   *Collection
+	coll   Collection
 }
 
-func newUDF(coll *Collection, udfID string) *UDF {
-	coll.client.fullPath = coll.client.fullPath + "/udfs/" + udfID
-	coll.client.postFix = coll.client.postFix + "/udfs/" + udfID
+func newUDF(coll Collection, udfID string) *UDF {
+	coll.client.path = coll.client.path + "/udfs/" + udfID
 	coll.client.rType = "udfs"
-	coll.client.rID = coll.client.postFix
+	coll.client.rLink = coll.client.path
 	udf := &UDF{
 		client: coll.client,
 		coll:   coll,
@@ -25,10 +24,9 @@ func newUDF(coll *Collection, udfID string) *UDF {
 	return udf
 }
 
-func newUDFs(coll *Collection) *UDFs {
-	coll.client.fullPath = coll.client.fullPath + "/udfs"
+func newUDFs(coll Collection) *UDFs {
+	coll.client.path += "/udfs"
 	coll.client.rType = "udfs"
-	coll.client.rID = coll.client.postFix
 	udfs := &UDFs{
 		client: coll.client,
 		coll:   coll,

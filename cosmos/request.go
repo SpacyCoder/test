@@ -51,13 +51,13 @@ func (e RequestError) Error() string {
 
 // Resource Request
 type Request struct {
-	rId, rType string
+	rLink, rType string
 	*http.Request
 }
 
 // Return new resource request with type and id
-func ResourceRequest(rID, rType string, req *http.Request) *Request {
-	return &Request{rID, rType, req}
+func ResourceRequest(rLink, rType string, req *http.Request) *Request {
+	return &Request{rLink, rType, req}
 }
 
 // Add 3 default headers to *Request
@@ -72,7 +72,7 @@ func (req *Request) DefaultHeaders(mKey string) (err error) {
 	b.WriteRune('\n')
 	b.WriteString(req.rType)
 	b.WriteRune('\n')
-	b.WriteString(req.rId)
+	b.WriteString(req.rLink)
 	b.WriteRune('\n')
 	b.WriteString(strings.ToLower(req.Header.Get(HeaderXDate)))
 	b.WriteRune('\n')
