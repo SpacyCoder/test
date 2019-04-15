@@ -12,7 +12,7 @@ type StoredProcedures struct {
 }
 
 func newStoredProcedure(coll Collection, storedProcedureID string) *StoredProcedure {
-	coll.client.path = coll.client.path + "/sprocs/" + storedProcedureID
+	coll.client.path += "/sprocs/" + storedProcedureID
 	coll.client.rType = "sprocs"
 	coll.client.rLink = coll.client.path
 	udf := &StoredProcedure{
@@ -47,9 +47,7 @@ func (s *StoredProcedures) Create(newStoredProcedure *StoredProcedureDefinition,
 
 func (s *StoredProcedure) Replace(newStoredProcedure *StoredProcedureDefinition, opts ...CallOption) (*StoredProcedureDefinition, error) {
 	storedProcedureResp := &StoredProcedureDefinition{}
-
-	_, err := s.client.create(newStoredProcedure, &storedProcedureResp, opts...)
-
+	_, err := s.client.replace(newStoredProcedure, &storedProcedureResp, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -64,10 +62,10 @@ func (s *StoredProcedures) ReadAll(opts ...CallOption) ([]StoredProcedureDefinit
 	}{}
 
 	_, err := s.client.read(&data, opts...)
-
 	if err != nil {
 		return nil, err
 	}
+
 	return data.StoredProcedures, err
 }
 

@@ -9,11 +9,24 @@ type Resource struct {
 	Ts   int    `json:"_ts,omitempty"`
 }
 
+type PolicyIndex struct {
+	DataType  string `json:"dataType,omitempty"`
+	Precision int    `json:"precision,omitempty"`
+	Kind      string `json:"kind,omitempty"`
+}
+
+type IndexingPolicyPath struct {
+	Path    string        `json:"path,omitempty"`
+	Indexes []PolicyIndex `json:"indexes,omitempty"`
+}
+
 // Indexing policy
 // TODO: Ex/IncludePaths
 type IndexingPolicy struct {
-	IndexingMode string `json: "indexingMode,omitempty"`
-	Automatic    bool   `json: "automatic,omitempty"`
+	IndexingMode  string               `json:"indexingMode,omitempty"`
+	Automatic     bool                 `json:"automatic,omitempty"`
+	IncludedPaths []IndexingPolicyPath `json:"includedPaths,omitempty"`
+	ExcludedPaths []IndexingPolicyPath `json:"excludedPaths,omitempty"`
 }
 
 // DatabaseDefinition defines the structure of a database data query
@@ -42,7 +55,7 @@ func (d *DatabaseDefinitions) Length() int {
 type CollectionDefinition struct {
 	Resource
 	IndexingPolicy IndexingPolicy         `json:"indexingPolicy,omitempty"`
-	PartitionKey   PartitionKeyDefinition `json:"partitionKey"`
+	PartitionKey   PartitionKeyDefinition `json:"partitionKey,omitempty"`
 	Docs           string                 `json:"_docs,omitempty"`
 	Udf            string                 `json:"_udfs,omitempty"`
 	Sporcs         string                 `json:"_sporcs,omitempty"`
@@ -105,7 +118,7 @@ type PartitionKeyRange struct {
 	MaxInclusive        string `json:"maxExclusive,omitempty"`
 }
 
-type Trigger struct {
+type TriggerDefintion struct {
 	Resource
 	Body             string `json:"body"`
 	TriggerOperation string `json:"triggerOperation"`

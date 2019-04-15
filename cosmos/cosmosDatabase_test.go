@@ -9,7 +9,7 @@ func TestCosmosDatabase(t *testing.T) {
 		t.Errorf("%+v", db.client)
 	}
 
-	if db.client.rID != "dbs/dbtest" {
+	if db.client.rLink != "dbs/dbtest" {
 		t.Errorf("%+v", db.client)
 	}
 
@@ -21,8 +21,8 @@ func TestCosmosDatabase(t *testing.T) {
 	if dbs.client.rType != "dbs" {
 		t.Errorf("Wrong rType %s", dbs.client.rType)
 	}
-	if dbs.client.rID != "dbs" {
-		t.Errorf("Wrong rID %s", dbs.client.rID)
+	if dbs.client.rLink != "" {
+		t.Errorf("Wrong rLink %s", dbs.client.rLink)
 	}
 
 	if dbs.client.path != "dbs" {

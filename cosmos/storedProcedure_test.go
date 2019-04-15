@@ -11,7 +11,7 @@ func TestStoredProcedure(t *testing.T) {
 		t.Errorf("%+v", sp.client)
 	}
 
-	if sp.client.rID != "dbs/dbtest/colls/colltest/sprocs/myStoredProcedure" {
+	if sp.client.rLink != "dbs/dbtest/colls/colltest/sprocs/myStoredProcedure" {
 		t.Errorf("%+v", sp.client)
 	}
 
@@ -24,8 +24,8 @@ func TestStoredProcedure(t *testing.T) {
 		t.Errorf("Wrong rType %s", sps.client.rType)
 	}
 
-	if sps.client.rID != "dbs/dbtest/colls/colltest/sprocs" {
-		t.Errorf("Wrong rID %s", sps.client.rID)
+	if sps.client.rLink != "dbs/dbtest/colls/colltest" {
+		t.Errorf("Wrong rLink %s", sps.client.rLink)
 	}
 
 	if sps.client.path != "dbs/dbtest/colls/colltest/sprocs" {

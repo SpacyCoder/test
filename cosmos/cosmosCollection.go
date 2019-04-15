@@ -36,6 +36,14 @@ func (c Collection) StoredProcedures() *StoredProcedures {
 	return newStoredProcedures(c)
 }
 
+func (c Collection) Trigger(id string) *Trigger {
+	return newTrigger(c, id)
+}
+
+func (c Collection) Triggers() *Triggers {
+	return newTriggers(c)
+}
+
 func newCollection(db Database, collID string) *Collection {
 	db.client.path += "/colls/" + collID
 	db.client.rType = "colls"
@@ -60,7 +68,7 @@ func newCollections(db Database) *Collections {
 	return coll
 }
 
-func (c *Collections) Create(newColl CollectionDefinition) (*CollectionDefinition, error) {
+func (c *Collections) Create(newColl *CollectionDefinition) (*CollectionDefinition, error) {
 	respColl := &CollectionDefinition{}
 	_, err := c.client.create(newColl, respColl)
 
@@ -90,16 +98,10 @@ func (c *Collection) Delete() (*Response, error) {
 	return c.client.delete()
 }
 
-func (c *Collections) Query(query *SqlQuerySpec, opts ...CallOption) (*CollectionDefinitions, error) {
-	data := struct {
-		Collections CollectionDefinitions `json:"DocumentCollections,omitempty"`
-		Count       int                   `json:"_count,omitempty"`
-	}{}
-	_, err := c.client.query(query, &data, opts...)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &data.Collections, err
+func (c *Collection) Replace(i *IndexingPolicy, ret interface{}, opts ...CallOption) (*Response, error) {
+	body := struct {
+		ID             string          `json:"id"`
+		IndexingPolicy *IndexingPolicy `json:"indexingPolicy"`
+	}{c.collID, i}
+	return c.client.replace(&body, ret, opts...)
 }

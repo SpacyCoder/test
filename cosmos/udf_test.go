@@ -11,7 +11,7 @@ func TestUDF(t *testing.T) {
 		t.Errorf("%+v", udf.client)
 	}
 
-	if udf.client.rID != "dbs/dbtest/colls/colltest/udfs/myudf" {
+	if udf.client.rLink != "dbs/dbtest/colls/colltest/udfs/myudf" {
 		t.Errorf("%+v", udf.client)
 	}
 
@@ -24,8 +24,8 @@ func TestUDF(t *testing.T) {
 		t.Errorf("Wrong rType %s", udfs.client.rType)
 	}
 
-	if udfs.client.rID != "dbs/dbtest/colls/colltest/udfs" {
-		t.Errorf("Wrong rID %s", udfs.client.rID)
+	if udfs.client.rLink != "dbs/dbtest/colls/colltest" {
+		t.Errorf("Wrong rLink %s", udfs.client.rLink)
 	}
 
 	if udfs.client.path != "dbs/dbtest/colls/colltest/udfs" {

@@ -88,9 +88,9 @@ func (d Documents) Query(query *SqlQuerySpec, docs interface{}, opts ...CallOpti
 	return res, err
 }
 
-func (d *Document) Replace(doc interface{}, opts ...CallOption) (*Response, error) {
+func (d *Document) Replace(doc interface{}, ret interface{}, opts ...CallOption) (*Response, error) {
 	d.client.createIDIfNotSet(doc)
-	return d.client.replace(doc, &doc, opts...)
+	return d.client.replace(doc, ret, opts...)
 }
 
 func (d Document) Delete(opts ...CallOption) (*Response, error) {

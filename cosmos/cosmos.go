@@ -3,7 +3,6 @@ package cosmos
 import (
 	"bytes"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"reflect"
@@ -20,7 +19,7 @@ type Client struct {
 	url        string
 	path       string
 	httpClient *http.Client
-	rType      string // dbs,colls,docs,udfs
+	rType      string // dbs,colls,docs,udfs,sprocs,triggers
 	rLink      string
 }
 
@@ -36,6 +35,9 @@ var buffers = &sync.Pool{
 
 // New create a new CosmosDB instance
 func New(connString string) (*Client, error) {
+	if connString == "" {
+		return nil, errors.New("Invalid connection string")
+	}
 	array := strings.Split(connString, ";")
 	path := strings.TrimPrefix(array[0], "AccountEndpoint=")
 	if path == "" {
@@ -113,7 +115,6 @@ func (c *Client) create(body, ret interface{}, opts ...CallOption) (*Response, e
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(string(data))
 	buf := bytes.NewBuffer(data)
 	return c.method(http.MethodPost, expectStatusCodeXX(http.StatusOK), ret, buf, opts...)
 }

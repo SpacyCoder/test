@@ -35,28 +35,24 @@ func newUDFs(coll Collection) *UDFs {
 	return udfs
 }
 
-func (u *UDF) Create(newUDF *UDFDefinition, opts ...CallOption) (*UDFDefinition, error) {
-	createdUDF := &UDFDefinition{}
-
-	_, err := u.client.create(newUDF, &createdUDF, opts...)
-
+func (u *UDFs) Create(newUDF *UDFDefinition, opts ...CallOption) (*UDFDefinition, error) {
+	createdUDFResp := &UDFDefinition{}
+	_, err := u.client.create(newUDF, &createdUDFResp, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return createdUDF, err
+	return createdUDFResp, err
 }
 
 func (u *UDF) Replace(newUDF *UDFDefinition, opts ...CallOption) (*UDFDefinition, error) {
-	createdUDF := &UDFDefinition{}
-
-	_, err := u.client.create(newUDF, &createdUDF, opts...)
-
+	updatedUDF := &UDFDefinition{}
+	_, err := u.client.replace(newUDF, &updatedUDF, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return createdUDF, err
+	return updatedUDF, err
 }
 
 func (u *UDFs) ReadAll(opts ...CallOption) ([]UDFDefinition, error) {
@@ -64,12 +60,11 @@ func (u *UDFs) ReadAll(opts ...CallOption) ([]UDFDefinition, error) {
 		Udfs  []UDFDefinition `json:"UserDefinedFunctions,omitempty"`
 		Count int             `json:"_count,omitempty"`
 	}{}
-
 	_, err := u.client.read(&data, opts...)
-
 	if err != nil {
 		return nil, err
 	}
+
 	return data.Udfs, err
 }
 

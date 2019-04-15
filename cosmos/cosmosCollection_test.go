@@ -10,7 +10,7 @@ func TestCosmosCollection(t *testing.T) {
 		t.Errorf("%+v", coll.client)
 	}
 
-	if coll.client.rID != "dbs/dbtest/colls/colltest" {
+	if coll.client.rLink != "dbs/dbtest/colls/colltest" {
 		t.Errorf("%+v", coll.client)
 	}
 
@@ -22,8 +22,8 @@ func TestCosmosCollection(t *testing.T) {
 	if coll.client.rType != "colls" {
 		t.Errorf("Wrong rType %s", colls.client.rType)
 	}
-	if colls.client.rID != "dbs/dbtest/colls" {
-		t.Errorf("Wrong rID %s", colls.client.rID)
+	if colls.client.rLink != "dbs/dbtest" {
+		t.Errorf("Wrong rLink %s", colls.client.rLink)
 	}
 
 	if colls.client.path != "dbs/dbtest/colls" {

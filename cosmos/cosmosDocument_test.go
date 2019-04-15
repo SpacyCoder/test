@@ -11,7 +11,7 @@ func TestCosmosDocument(t *testing.T) {
 		t.Errorf("%+v", doc.client)
 	}
 
-	if doc.client.rID != "dbs/dbtest/colls/colltest/docs/doctest" {
+	if doc.client.rLink != "dbs/dbtest/colls/colltest/docs/doctest" {
 		t.Errorf("%+v", doc.client)
 	}
 
@@ -24,8 +24,8 @@ func TestCosmosDocument(t *testing.T) {
 		t.Errorf("Wrong rType %s", docs.client.rType)
 	}
 
-	if docs.client.rID != "dbs/dbtest/colls/colltest/docs" {
-		t.Errorf("Wrong rID %s", docs.client.rID)
+	if docs.client.rLink != "dbs/dbtest/colls/colltest" {
+		t.Errorf("Wrong rID %s", docs.client.rLink)
 	}
 
 	if docs.client.path != "dbs/dbtest/colls/colltest/docs" {

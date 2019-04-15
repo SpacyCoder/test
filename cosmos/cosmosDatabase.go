@@ -26,6 +26,14 @@ type Databases struct {
 	client *Client
 }
 
+func (d Database) User(id string) *User {
+	return newUser(d, id)
+}
+
+func (d Database) Users() *Users {
+	return newUsers(d)
+}
+
 func newDatabase(client Client, dbID string) *Database {
 	client.path = "dbs/" + dbID
 	client.rType = "dbs"
