@@ -1,5 +1,7 @@
 package cosmos
 
+import "fmt"
+
 type Offer struct {
 	client  Client
 	offerID string
@@ -11,25 +13,20 @@ type OfferDefinition struct {
 	Content      struct {
 		OfferThroughput int `json:"offerThroughput"`
 	} `json:"content"`
-	Resource        string `json:"resource"`
+	OfferResource   string `json:"resource"`
 	OfferResourceID string `json:"offerResourceId"`
-	ID              string `json:"id"`
-	Rid             string `json:"_rid"`
-	Self            string `json:"_self"`
-	Etag            string `json:"_etag"`
-	Ts              int    `json:"_ts"`
+	Resource
 }
 
 type Offers struct {
 	client Client
 }
 
-/*
-
 func newOffer(client Client, offerID string) *Offer {
-	client.path += "/offers/" + offerID
+	client.path = "offers/" + offerID
 	client.rType = "offers"
-	client.rLink = client.path
+	client.rLink = offerID
+	fmt.Println("URL", client.getURL())
 	offer := &Offer{
 		client:  client,
 		offerID: offerID,
@@ -39,7 +36,7 @@ func newOffer(client Client, offerID string) *Offer {
 }
 
 func newOffers(client Client) *Offers {
-	client.path += "/offers"
+	client.path = "offers"
 	client.rType = "offers"
 	offers := &Offers{
 		client: client,
@@ -48,46 +45,41 @@ func newOffers(client Client) *Offers {
 	return offers
 }
 
-func (u *Offers) Create(user *UserDefinition, opts ...CallOption) (*UserDefinition, error) {
-	createdUser := &UserDefinition{}
-	_, err := u.client.create(user, &createdUser, opts...)
+func (u *Offers) Query(query *SqlQuerySpec, opts ...CallOption) ([]OfferDefinition, error) {
+	var offers []OfferDefinition
+	_, err := u.client.query(query, &offers, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return createdUser, err
+	return offers, err
 }
 
-func (u *Offer) Replace(user *UserDefinition, opts ...CallOption) (*UserDefinition, error) {
-	updatedUser := &UserDefinition{}
-	_, err := u.client.replace(user, &updatedUser, opts...)
+func (u *Offer) Replace(offer *OfferDefinition, opts ...CallOption) (*OfferDefinition, error) {
+	var updatedOffer *OfferDefinition
+	_, err := u.client.replace(offer, updatedOffer, opts...)
 	if err != nil {
 		return nil, err
 	}
 
-	return updatedUser, err
+	return updatedOffer, err
 }
 
-func (o *Offers) ReadAll(opts ...CallOption) ([]UserDefinition, error) {
+func (o *Offers) ReadAll(opts ...CallOption) ([]OfferDefinition, error) {
 	data := struct {
-		Offers []UserDefinition `json:"offers,omitempty"`
-		Count  int              `json:"_count,omitempty"`
+		Offers []OfferDefinition `json:"offers,omitempty"`
+		Count  int               `json:"_count,omitempty"`
 	}{}
 
 	_, err := o.client.read(&data, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return data.Users, err
+	return data.Offers, err
 }
 
-func (o *Offer) Delete(opts ...CallOption) (*Response, error) {
-	return o.client.delete(opts...)
+func (o *Offer) Read(opts ...CallOption) (*OfferDefinition, error) {
+	var offer *OfferDefinition
+	_, err := o.client.read(offer, opts...)
+	return offer, err
 }
-
-func (o *Offer) Read(opts ...CallOption) (*UserDefinition, error) {
-	user := &UserDefinition{}
-	_, err := o.client.read(user, opts...)
-	return user, err
-}
-*/

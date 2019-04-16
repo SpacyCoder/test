@@ -1,6 +1,8 @@
 package cosmos
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestQueryGenerator(t *testing.T) {
 	queryTests := []struct {

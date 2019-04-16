@@ -51,6 +51,14 @@ func New(connString string) (*Client, error) {
 	return &Client{key, path, path, "", httpClient, "", ""}, nil
 }
 
+func (c Client) Offer(offerID string) *Offer {
+	return newOffer(c, offerID)
+}
+
+func (c Client) Offers() *Offers {
+	return newOffers(c)
+}
+
 // Database returns a new Database struct that contains the opertaions you can do on single database
 func (c Client) Database(dbID string) *Database {
 	return newDatabase(c, dbID)

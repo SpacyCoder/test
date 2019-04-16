@@ -34,6 +34,8 @@ func TestCosmos(t *testing.T) {
 	testUDF(t, client)
 	testTrigger(t, client)
 	testUser(t, client)
+	testOffers(t, client)
+	return
 	cleanup(t, client)
 }
 
@@ -451,5 +453,46 @@ func testPermissions(t *testing.T, client *cosmos.Client) {
 	_, err = myUser.Permission("test_permission2").Delete()
 	if err != nil {
 		t.Fatalf("Deleting permission caused error: %s", err.Error())
+	}
+}
+
+func testOffers(t *testing.T, client *cosmos.Client) {
+	coll, err := client.Database(dbID).Collection(collID).Read()
+	if err != nil {
+		t.Fatalf("Reading collection caused error: %s", err.Error())
+	}
+
+	offers, err := client.Offers().ReadAll()
+	if err != nil {
+		t.Fatalf("Listing offers caused error: %s", err.Error())
+	}
+
+	offer, err := client.Offer(offers[0].ID).Read()
+	if err != nil {
+		t.Fatalf("Reading offer caused error: %s", err.Error())
+	}
+	if offer.OfferVersion != offers[0].OfferVersion {
+		t.Fatalf("Inavalid offer version: %s", offer.OfferVersion)
+	}
+
+	newOffer := &cosmos.OfferDefinition{
+		Content: struct {
+			OfferThroughput int `json:"offerThroughput"`
+		}{OfferThroughput: 400},
+		OfferVersion:    "V2",
+		OfferType:       "Invalid",
+		OfferResource:   coll.Self,
+		OfferResourceID: coll.Rid,
+		Resource:        cosmos.Resource{ID: offers[0].ID, Rid: offers[0].Rid},
+	}
+	client.Offer(offers[0].ID).Replace(newOffer)
+
+	offerQuery := cosmos.Q("SELECT * FROM root")
+	queryOffers, err := client.Offers().Query(offerQuery)
+	if err != nil {
+		t.Fatalf("Querying offers caused error: %s", err.Error())
+	}
+	if len(queryOffers) != len(offers) {
+		t.Fatalf("Inavalid count: %d", len(queryOffers))
 	}
 }

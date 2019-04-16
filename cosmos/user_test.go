@@ -5,18 +5,18 @@ import "testing"
 func TestUser(t *testing.T) {
 	client := getDummyClient()
 	db := client.Database("dbtest")
-	sp := db.User("myUser")
+	user := db.User("myUser")
 
-	if sp.client.rType != "users" {
-		t.Errorf("%+v", sp.client)
+	if user.client.rType != "users" {
+		t.Errorf("%+v", user.client)
 	}
 
-	if sp.client.rLink != "dbs/dbtest/users/myUser" {
-		t.Errorf("%+v", sp.client)
+	if user.client.rLink != "dbs/dbtest/users/myUser" {
+		t.Errorf("%+v", user.client)
 	}
 
-	if sp.client.path != "dbs/dbtest/users/myUser" {
-		t.Errorf("%+v", sp.client)
+	if user.client.path != "dbs/dbtest/users/myUser" {
+		t.Errorf("%+v", user.client)
 	}
 
 	usrs := db.Users()
