@@ -20,11 +20,6 @@ type OfferDefinition struct {
 	Ts              int    `json:"_ts"`
 }
 
-type UserDefinition struct {
-	Resource
-	_persmissions string `json:"_persmissions,omitempty"`
-}
-
 type Offers struct {
 	client Client
 }
