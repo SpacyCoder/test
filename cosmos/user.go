@@ -48,6 +48,7 @@ func newUsers(db Database) *Users {
 	return users
 }
 
+// Create a new user
 func (u *Users) Create(user *UserDefinition, opts ...CallOption) (*UserDefinition, error) {
 	createdUser := &UserDefinition{}
 	_, err := u.client.create(user, &createdUser, opts...)
@@ -58,6 +59,7 @@ func (u *Users) Create(user *UserDefinition, opts ...CallOption) (*UserDefinitio
 	return createdUser, err
 }
 
+// Replace an existing user with a new one.
 func (u *User) Replace(user *UserDefinition, opts ...CallOption) (*UserDefinition, error) {
 	updatedUser := &UserDefinition{}
 	_, err := u.client.replace(user, &updatedUser, opts...)
@@ -68,6 +70,7 @@ func (u *User) Replace(user *UserDefinition, opts ...CallOption) (*UserDefinitio
 	return updatedUser, err
 }
 
+// ReadAll users in a collection
 func (u *Users) ReadAll(opts ...CallOption) ([]UserDefinition, error) {
 	data := struct {
 		Users []UserDefinition `json:"users,omitempty"`
@@ -81,10 +84,12 @@ func (u *Users) ReadAll(opts ...CallOption) ([]UserDefinition, error) {
 	return data.Users, err
 }
 
+// Delete existing user
 func (u *User) Delete(opts ...CallOption) (*Response, error) {
 	return u.client.delete(opts...)
 }
 
+// Read a single user from collection
 func (u *User) Read(opts ...CallOption) (*UserDefinition, error) {
 	user := &UserDefinition{}
 	_, err := u.client.read(user, opts...)

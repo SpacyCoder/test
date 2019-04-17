@@ -11,11 +11,13 @@ type Coordinate [2]float64
 
 type Coordinates []Coordinate
 
+// LineString struct defines a line string
 type LineString struct {
 	Type        string      `json:"type"`
 	Coordinates Coordinates `json:"coordinates"`
 }
 
+// NewLineString creates a new LineString struct.
 func NewLineString(coords ...Coordinate) *LineString {
 	line := &LineString{Type: "LineString", Coordinates: coords}
 	return line

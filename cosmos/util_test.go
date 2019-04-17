@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestQueryGenerator(t *testing.T) {
+func TestQuery(t *testing.T) {
 	queryTests := []struct {
 		input               *SqlQuerySpec
 		expectedParamLength int

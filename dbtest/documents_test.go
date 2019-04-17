@@ -259,6 +259,7 @@ func testStoredProcedure(t *testing.T, client *cosmos.Client) {
 	if err != nil {
 		t.Fatalf("Replacing stored procedure caused error: %s", err.Error())
 	}
+
 	var res2 string
 	_, err = coll.StoredProcedure("mySP").Execute([]string{"Hello", "Cosmos"}, &res2)
 	if err != nil {
@@ -290,7 +291,6 @@ func testUDF(t *testing.T, client *cosmos.Client) {
 		Body:     "function tax(income) {\r\n    if(income == undefined) \r\n        throw 'no input';\r\n    if (income < 1000) \r\n        return income * 0.1;\r\n    else if (income < 10000) \r\n        return income * 0.2;\r\n    else\r\n        return income * 0.4;\r\n}",
 		Resource: cosmos.Resource{ID: "myUDF"},
 	}
-
 	// Create UDF
 	createdUDF, err := coll.UDFs().Create(udfDef)
 	if err != nil {

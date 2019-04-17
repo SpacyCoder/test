@@ -14,6 +14,7 @@ type QueryBuilder struct {
 	Parameters []cosmos.QueryParam
 }
 
+// New creates a new QueryBuilder
 func New() *QueryBuilder {
 	return &QueryBuilder{}
 }
@@ -60,7 +61,6 @@ func (qb *QueryBuilder) Build() *cosmos.SqlQuerySpec {
 			query += s
 		} else {
 			query += ", " + s
-
 		}
 	}
 
