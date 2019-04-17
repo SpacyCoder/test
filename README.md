@@ -5,12 +5,9 @@
     - [Documents](#Documents)
     - [Collections](#Collection)
     - [Databases](#Databases)
-    - Stored Procedures
-    - UDFs
-    - Triggers
-    - Users
-    - Permissions
-    - Offers 
+    - [StoredProcedures](#StoredProcedures)
+    - [UDFs](#UDFs)
+    - [Triggers](#Triggers)
 
 ## Installation
 
@@ -247,7 +244,7 @@ func main() {
     }
 ```
 
-### Stored Procedures
+### StoredProcedures
 #### Create Stored Procedure
 ```GO
     import "github.com/SpacyCoder/cosmosdb-go-sdk/cosmos"
