@@ -192,24 +192,6 @@ func main() {
         client, err := cosmos.New("YOUR_CONNECTION_STRING")
         dbDef, err := client.Databases().Create("DATABASE_ID")
     }
-
-	// Read db
-	db := client.Database(dbID)
-	testDb, err := db.Read()
-	if err != nil {
-		t.Fatalf("Reading database caused error: %s", err.Error())
-	}
-	if testDb.ID != dbID {
-		t.Fatalf("Wrong ID: %s should be: %s", testDb.ID, dbID)
-	}
-
-	// List databases
-	dbs := client.Databases()
-	_, err = dbs.ReadAll()
-	if err != nil {
-		t.Fatalf("Listing databases caused error: %s", err.Error())
-	}
-    }
 ```
 #### Read Database
 ```GO
@@ -219,10 +201,6 @@ func main() {
         client, err := cosmos.New("YOUR_CONNECTION_STRING")
         dbDef, err := client.Database("DATABASE_ID").Read()
     }
-
-	// List databases
-	
-    }
 ```
 #### List Databases 
 ```GO
@@ -230,7 +208,7 @@ func main() {
 
     func main() {
         client, err := cosmos.New("YOUR_CONNECTION_STRING")
-	    dbDefs, err = client.Databases().ReadAll()
+        dbDefs, err = client.Databases().ReadAll()
     }
 ```
     
@@ -240,7 +218,7 @@ func main() {
 
     func main() {
         client, err := cosmos.New("YOUR_CONNECTION_STRING")
-	    _, err = client.Database(dbID).Delete()
+        _, err = client.Database(dbID).Delete()
     }
 ```
 
@@ -254,8 +232,10 @@ func main() {
         coll := client.Database("dbID").Collection("collID")
         spDef := &cosmos.StoredProcedureDefinition{
             Resource: cosmos.Resource{ID: "mySP"}, 
-            Body: "function () {\r\n var context = getContext();\r\n var response = context.getResponse();\r\n\r\n  response.setBody(\"Hello, World\");\r\n}"}
-	    createdSP, err := coll.StoredProcedures().Create(spDef)
+            Body: "function () {\r\n var context = getContext();\r\n var response = context.getResponse();\r\n\r\n  response.setBody(\"Hello, World\");\r\n}"
+        }
+	    
+        createdSP, err := coll.StoredProcedures().Create(spDef)
     }
 ```
 #### Execute Stored Procedure
@@ -266,7 +246,7 @@ func main() {
         client, err := cosmos.New("YOUR_CONNECTION_STRING")
         coll := client.Database("dbID").Collection("collID")
         var res string
-	    _, err = coll.StoredProcedure("mySP").Execute("", &res)
+        _, err = coll.StoredProcedure("mySP").Execute("", &res)
     }
 ```
 #### Replace Stored Procedure
@@ -276,8 +256,12 @@ func main() {
      func main() {
         client, err := cosmos.New("YOUR_CONNECTION_STRING")
         coll := client.Database("dbID").Collection("collID")
-        newSpDef := &cosmos.StoredProcedureDefinition{Resource: cosmos.Resource{ID: "mySP"}, Body: "function (greet, someone) {\r\n var context = getContext();\r\n var response = context.getResponse();\r\n\r\n response.setBody(greet + \", \"+ someone);\r\n}"}
-	    _, err = coll.StoredProcedure("mySP").Replace(newSpDef)
+        newSpDef := &cosmos.StoredProcedureDefinition{
+            Resource: cosmos.Resource{ID: "mySP"}, 
+            Body: "function (greet, someone) {\r\n var context = getContext();\r\n var response = context.getResponse();\r\n\r\n response.setBody(greet + \", \"+ someone);\r\n}"
+        }
+	    
+        _, err = coll.StoredProcedure("mySP").Replace(newSpDef)
     }
 ```
 #### List Stored Procedures 
@@ -297,7 +281,7 @@ func main() {
 
     func main() {
         client, err := cosmos.New("YOUR_CONNECTION_STRING")
-	    _, err = coll.StoredProcedure("mySP").Delete()
+        _, err = coll.StoredProcedure("mySP").Delete()
     }
 ```
 
@@ -311,9 +295,9 @@ func main() {
         coll := client.Database("dbID").Collection("collID")
         udfDef := &cosmos.UDFDefinition{
 		    Body: "function tax(income) {\r\n if(income == undefined) \r\n throw 'no input';\r\n if (income < 1000) \r\n return income * 0.1;\r\n else if (income < 10000) \r\n return income * 0.2;\r\n else\r\n return income * 0.4;\r\n}",
-		    Resource: cosmos.Resource{ID: "myUDF"},
-	    }
-	    createdUDF, err := coll.UDFs().Create(udfDef)
+            Resource: cosmos.Resource{ID: "myUDF"},
+        }
+        createdUDF, err := coll.UDFs().Create(udfDef)
     }
 ```
 #### Replace UDF
@@ -325,9 +309,9 @@ func main() {
         coll := client.Database("dbID").Collection("collID")
         newUDF := &cosmos.UDFDefinition{
 		    Body: "function tax(income) {\r\n if(income == undefined) \r\n throw 'no input';\r\n if (income     < 2000) \r\n return income * 0.1;\r\n else if (income < 10000) \r\n return income * 0.2;\r\n    else\r\n return income * 0.4;\r\n}",
-		    Resource: cosmos.Resource{ID: "myUDF"},
-	    }
-	    updatedUDF, err := coll.UDF("myUDF").Replace(newUDF)
+            Resource: cosmos.Resource{ID: "myUDF"},
+        }
+        updatedUDF, err := coll.UDF("myUDF").Replace(newUDF)
     }
 ```
 #### List UDFs
@@ -346,7 +330,7 @@ func main() {
 
     func main() {
         client, err := cosmos.New("YOUR_CONNECTION_STRING")
-	    _, err = coll.UDF("myUDF").Delete()
+        _, err = coll.UDF("myUDF").Delete()
     }
 ```
 ### Triggers
@@ -361,9 +345,9 @@ func main() {
 		    Body: "function updateMetadata() {\r\n  var context = getContext();\r\nvar collection = context.getCollection   ();\r\nvar response = context.getResponse();\r\nvar createdDocument = response.getBody();\r\n\r\n// query for metadata     document\r\nvar filterQuery = 'SELECT * FROM root r WHERE r.id = \"_metadata\"';\r\nvar accept = collection.queryDocuments  (collection.getSelfLink(), filterQuery,\r\n  updateMetadataCallback);\r\n    if(!accept) throw \"Unable to update metadata, abort\";\r\n\r\nfunction updateMetadataCallback(err, documents, responseOptions) {\r\n  if(err) throw new Error (\"Error\" + err.message);\r\n   if(documents.length != 1) throw 'Unable to find metadata document';\r\n   var metadataDocument = documents[0];\r\n\r\n   // update metadata\r\n   metadataDocument.createdDocuments += 1;\r\n     metadataDocument.createdNames += \" \" + createdDocument.id;\r\nvar accept = collection.replaceDocument (metadataDocument._self,\r\n metadataDocument, function(err, docReplaced) {\r\n       if(err) throw \"Unable to update  metadata, abort\";\r\n });\r\nif(!accept) throw \"Unable to update metadata, abort\";\r\nreturn;\r\n    }",
 		    Resource:         cosmos.Resource{ID: "myTrigger"},
 		    TriggerOperation: "All",
-		    TriggerType:      "Post",
-	    }
-	    _, err := coll.Triggers().Create(triggerDef)
+            TriggerType:      "Post",
+        }
+        _, err := coll.Triggers().Create(triggerDef)
     }
 ```
 #### Replace Trigger
@@ -377,9 +361,9 @@ func main() {
 		    Body: "function updateMetadata() {\r\n  var context = getContext();\r\nvar collection = context.getCollection   ();\r\nvar response = context.getResponse();\r\nvar createdDocument = response.getBody();\r\n\r\n// query for metadata     document\r\nvar filterQuery = 'SELECT * FROM root r WHERE r.id = \"_metadata\"';\r\nvar accept = collection.queryDocuments  (collection.getSelfLink(), filterQuery,\r\n  updateMetadataCallback);\r\n    if(!accept) throw \"Unable to update     metadata, exit\";\r\n\r\nfunction updateMetadataCallback(err, documents, responseOptions) {\r\n  if(err) throw new Error    (\"Error\" + err.message);\r\n   if(documents.length != 1) throw 'Unable to find metadata document';\r\n   var  metadataDocument = documents[0];\r\n\r\n   // update metadata\r\n   metadataDocument.createdDocuments += 1;\r\n      metadataDocument.createdNames += \" \" + createdDocument.id;\r\nvar accept = collection.replaceDocument    (metadataDocument._self,\r\n    metadataDocument, function(err, docReplaced) {\r\n       if(err) throw \"Unable to update   metadata, abort\";\r\n    });\r\nif(!accept) throw \"Unable to update metadata, abort\";\r\nreturn;\r\n    }",
 		    Resource:         cosmos.Resource{ID: "myTrigger"},
 		    TriggerOperation: "All",
-		    TriggerType:      "Post",
-	    }
-	    updatedTriggerDef, err := coll.Trigger("myTrigger").Replace(newTriggerDef)
+            TriggerType:      "Post",
+        }
+        updatedTriggerDef, err := coll.Trigger("myTrigger").Replace(newTriggerDef)
     }
 ```
 #### List Triggers
