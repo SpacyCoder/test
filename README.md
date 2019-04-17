@@ -11,7 +11,7 @@
 
 ## Installation
 
-- go get github.com/SpacyCoder/cosmosdb-go-sdk/cosmos
+- go get github.com/spacycoder/cosmosdb-go-sdk/cosmos
 
 ## Usage
 
