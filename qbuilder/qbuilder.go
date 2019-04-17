@@ -8,10 +8,10 @@ type Condition struct {
 }
 
 type QueryBuilder struct {
-	S          []string
-	F          string
-	Conditions []Condition
-	Parameters []cosmos.QueryParam
+	selectors  []string
+	from       string
+	conditions []Condition
+	params     []cosmos.QueryParam
 }
 
 // New creates a new QueryBuilder
@@ -20,12 +20,12 @@ func New() *QueryBuilder {
 }
 
 func (qb *QueryBuilder) Select(s ...string) *QueryBuilder {
-	qb.S = s
+	qb.selectors = s
 	return qb
 }
 
 func (qb *QueryBuilder) From(f string) *QueryBuilder {
-	qb.F = f
+	qb.from = f
 	return qb
 }
 
@@ -35,7 +35,7 @@ func (qb *QueryBuilder) And(conditionsValues ...string) *QueryBuilder {
 		condition := Condition{ConditionType: "AND", Value: c}
 		conditions = append(conditions, condition)
 	}
-	qb.Conditions = append(qb.Conditions, conditions...)
+	qb.conditions = append(qb.conditions, conditions...)
 	return qb
 }
 
@@ -45,18 +45,18 @@ func (qb *QueryBuilder) Or(conditionsValues ...string) *QueryBuilder {
 		condition := Condition{ConditionType: "OR", Value: c}
 		conditions = append(conditions, condition)
 	}
-	qb.Conditions = append(qb.Conditions, conditions...)
+	qb.conditions = append(qb.conditions, conditions...)
 	return qb
 }
 
 func (qb *QueryBuilder) Params(params ...cosmos.QueryParam) *QueryBuilder {
-	qb.Parameters = append(qb.Parameters, params...)
+	qb.params = append(qb.params, params...)
 	return qb
 }
 
 func (qb *QueryBuilder) Build() *cosmos.SqlQuerySpec {
 	query := "SELECT "
-	for i, s := range qb.S {
+	for i, s := range qb.selectors {
 		if i == 0 {
 			query += s
 		} else {
@@ -64,13 +64,13 @@ func (qb *QueryBuilder) Build() *cosmos.SqlQuerySpec {
 		}
 	}
 
-	query += " FROM " + qb.F
-	if len(qb.Conditions) == 0 {
+	query += " FROM " + qb.from
+	if len(qb.conditions) == 0 {
 		return cosmos.Q(query)
 	}
 
 	query += " WHERE"
-	for i, c := range qb.Conditions {
+	for i, c := range qb.conditions {
 		if i == 0 {
 			query += " " + c.Value
 		} else {
@@ -78,5 +78,5 @@ func (qb *QueryBuilder) Build() *cosmos.SqlQuerySpec {
 		}
 	}
 
-	return cosmos.Q(query, qb.Parameters...)
+	return cosmos.Q(query, qb.params...)
 }
