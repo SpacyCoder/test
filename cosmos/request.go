@@ -38,18 +38,6 @@ const (
 	SupportedVersion = "2017-02-22"
 )
 
-// Request Error
-type RequestError struct {
-	Code    string `json:"code"`
-	Message string `json:"message"`
-}
-
-// Implement Error function
-func (e RequestError) Error() string {
-	return fmt.Sprintf("%v, %v", e.Code, e.Message)
-}
-
-// Resource Request
 type Request struct {
 	rLink, rType string
 	*http.Request

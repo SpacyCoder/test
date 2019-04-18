@@ -3,6 +3,7 @@ package cosmos
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"reflect"
@@ -172,9 +173,10 @@ func (c *Client) do(r *Request, validator statusCodeValidatorFunc, respBody inte
 		return nil, err
 	}
 	if !validator(resp.StatusCode) {
-		err = &RequestError{}
-		readJSON(resp.Body, &err)
-		return &Response{resp.Header}, err
+		var errBody string
+		readJSON(resp.Body, &errBody)
+		fmt.Println(errBody)
+		return &Response{resp.Header}, NewCosmosError(errBody, resp.StatusCode)
 	}
 
 	defer resp.Body.Close()
