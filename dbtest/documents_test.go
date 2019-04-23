@@ -12,7 +12,7 @@ func getClient() (*cosmos.Client, error) {
 	return cosmos.New(testDbURL)
 }
 
-var dbID = "db-test2"
+var dbID = "db-test"
 var collID = "coll-test"
 
 type TestDoc struct {
@@ -35,7 +35,6 @@ func TestCosmos(t *testing.T) {
 	testTrigger(t, client)
 	testUser(t, client)
 	testOffers(t, client)
-	return
 	cleanup(t, client)
 }
 
@@ -58,7 +57,6 @@ func cleanup(t *testing.T, client *cosmos.Client) {
 	if err != nil {
 		t.Fatalf("Deleting collection caused error: %s", err.Error())
 	}
-
 }
 
 func testDatabaseOperations(t *testing.T, client *cosmos.Client) {
@@ -472,7 +470,7 @@ func testOffers(t *testing.T, client *cosmos.Client) {
 		t.Fatalf("Reading offer caused error: %s", err.Error())
 	}
 	if offer.OfferVersion != offers[0].OfferVersion {
-		t.Fatalf("Inavalid offer version: %s", offer.OfferVersion)
+		t.Fatalf("Invalid offer version: %s", offer.OfferVersion)
 	}
 
 	newOffer := &cosmos.OfferDefinition{
@@ -493,6 +491,10 @@ func testOffers(t *testing.T, client *cosmos.Client) {
 		t.Fatalf("Querying offers caused error: %s", err.Error())
 	}
 	if len(queryOffers) != len(offers) {
-		t.Fatalf("Inavalid count: %d", len(queryOffers))
+		t.Fatalf("Invalid count: %d", len(queryOffers))
 	}
+}
+
+func testIterator(t *testing.T) {
+
 }

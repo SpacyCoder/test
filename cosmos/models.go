@@ -1,6 +1,6 @@
 package cosmos
 
-// Resource every document have these
+// Resource every cosmos resource have these.
 type Resource struct {
 	ID   string `json:"id,omitempty"`
 	Self string `json:"_self,omitempty"`
@@ -9,19 +9,20 @@ type Resource struct {
 	Ts   int    `json:"_ts,omitempty"`
 }
 
+// PolicyIndex
 type PolicyIndex struct {
 	DataType  string `json:"dataType,omitempty"`
 	Precision int    `json:"precision,omitempty"`
 	Kind      string `json:"kind,omitempty"`
 }
 
+// IndexingPolicyPath model
 type IndexingPolicyPath struct {
 	Path    string        `json:"path,omitempty"`
 	Indexes []PolicyIndex `json:"indexes,omitempty"`
 }
 
-// Indexing policy
-// TODO: Ex/IncludePaths
+// IndexingPolicy model
 type IndexingPolicy struct {
 	IndexingMode  string               `json:"indexingMode,omitempty"`
 	Automatic     bool                 `json:"automatic,omitempty"`
@@ -39,7 +40,7 @@ type DatabaseDefinition struct {
 // DatabaseDefinitions slice of Database elements
 type DatabaseDefinitions []DatabaseDefinition
 
-// First returns first database in slice
+// First returns first database
 func (d DatabaseDefinitions) First() *DatabaseDefinition {
 	if len(d) == 0 {
 		return nil
@@ -47,6 +48,7 @@ func (d DatabaseDefinitions) First() *DatabaseDefinition {
 	return &d[0]
 }
 
+// Length returns the number of databases.
 func (d *DatabaseDefinitions) Length() int {
 	return len(*d)
 }
@@ -63,6 +65,7 @@ type CollectionDefinition struct {
 	Conflicts      string                 `json:"_conflicts,omitempty"`
 }
 
+// PartitionKeyDefinition is used to define a partitionkey.
 type PartitionKeyDefinition struct {
 	Paths []string `json:"paths"`
 	Kind  string   `json:"kind"`
@@ -79,32 +82,29 @@ func (c CollectionDefinitions) First() *CollectionDefinition {
 	return &c[0]
 }
 
+// Length returns the number of collections.
 func (c *CollectionDefinitions) Length() int {
 	return len(*c)
 }
 
+// At return collection at the specified index
 func (c CollectionDefinitions) At(index int) *CollectionDefinition {
 	return &c[index]
 }
 
-type CollectionsResponse struct {
-	Collections CollectionDefinition `json:"Collections,omitempty"`
-	Count       int                  `json:"_count,omitempty"`
-}
-
-// DocumentDefinition is the struct of a document
+// DocumentDefinition defines all the default document properties.
 type DocumentDefinition struct {
 	Resource
 	Attachments string `json:"attachments,omitempty"`
 }
 
-// StoredProcedure structure
+// StoredProcedureDefinition stored procedure model
 type StoredProcedureDefinition struct {
 	Resource
 	Body string `json:"body,omitempty"`
 }
 
-// UDF (User Defined Function) definition
+// UDFDefinition (User Defined Function) definition
 type UDFDefinition struct {
 	Resource
 	Body string `json:"body,omitempty"`
@@ -118,6 +118,7 @@ type PartitionKeyRange struct {
 	MaxInclusive        string `json:"maxExclusive,omitempty"`
 }
 
+// TriggerDefinition defines the model of a cosmos trigger.
 type TriggerDefintion struct {
 	Resource
 	Body             string `json:"body"`

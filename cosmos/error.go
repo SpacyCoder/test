@@ -2,66 +2,82 @@ package cosmos
 
 import "fmt"
 
-type CosmosError struct {
-	message    string `json:"message"`
-	statusCode int    `json:"statusCode"`
+// Error reports cosmos related errors.
+type Error struct {
+	message    string
+	statusCode int
 }
 
-func NewCosmosError(message string, statusCode int) *CosmosError {
-	return &CosmosError{
+// NewCosmosError creates a new cosmos error struct
+func NewCosmosError(message string, statusCode int) *Error {
+	return &Error{
 		message:    message,
 		statusCode: statusCode,
 	}
 }
 
 // Error implements the error interface
-func (e *CosmosError) Error() string {
+func (e *Error) Error() string {
 	return fmt.Sprintf("%v, %v", e.statusCode, e.message)
 }
 
-func (e *CosmosError) StatusCode() int {
+// StatusCode returns status code.
+func (e *Error) StatusCode() int {
 	return e.statusCode
 }
 
-func (e *CosmosError) StatusOK() bool {
+// StatusOK checks is cosmos response was ok.
+func (e *Error) StatusOK() bool {
 	return e.statusCode == 200
 }
 
-func (e *CosmosError) Created() bool {
+// Created will be true if a resource was created.
+func (e *Error) Created() bool {
 	return e.statusCode == 201
 }
 
-func (e *CosmosError) BadRequest() bool {
+// BadRequest see `https://docs.microsoft.com/en-us/rest/api/cosmos-db/http-status-codes-for-cosmosdb` for possible cause.
+func (e *Error) BadRequest() bool {
 	return e.statusCode == 400
 }
 
-func (e *CosmosError) Unauthorized() bool {
+// Unauthorized is true of operation was not authorized.
+func (e *Error) Unauthorized() bool {
 	return e.statusCode == 401
 }
 
-func (e *CosmosError) Forbidden() bool {
+// Forbidden see `https://docs.microsoft.com/en-us/rest/api/cosmos-db/http-status-codes-for-cosmosdb` for possible cause.
+func (e *Error) Forbidden() bool {
 	return e.statusCode == 403
 }
 
-func (e *CosmosError) NotFound() bool {
+// NotFound could not find resource.
+func (e *Error) NotFound() bool {
 	return e.statusCode == 404
 }
 
-func (e *CosmosError) RequestTimeout() bool {
+// RequestTimeout the operation did not complete within the allotted amount of time.
+func (e *Error) RequestTimeout() bool {
 	return e.statusCode == 408
 }
 
-func (e *CosmosError) Conflict() bool {
+// Conflict returns true if the ID for a resource has already been taken by an existing resource.
+// Only applicable to PUT and POST request. e.g. Create and Replace.
+func (e *Error) Conflict() bool {
 	return e.statusCode == 409
 }
 
-func (e *CosmosError) EntityTooLarge() bool {
+// EntityTooLarge returns true if the request exceeded the allowable document size for a request. the max allowable document size is 2 MB.
+func (e *Error) EntityTooLarge() bool {
 	return e.statusCode == 413
 }
 
-func (e *CosmosError) RetryWith() bool {
+// RetryWith returns true if the operation encountered a transient error. This code only occurs on write operations. It is safe to retry the operation.
+func (e *Error) RetryWith() bool {
 	return e.statusCode == 449
 }
-func (e *CosmosError) ServiceUnavailable() bool {
+
+// ServiceUnavailable operation could not be completed because the service was unavailable
+func (e *Error) ServiceUnavailable() bool {
 	return e.statusCode == 503
 }

@@ -11,30 +11,17 @@ func (q SqlQuerySpec) Read(p []byte) (n int, err error) {
 	return len(b), io.EOF
 }
 
+// Document performs operations on a given document.
 type Document struct {
 	client Client
 	coll   Collection
 	docID  string
 }
 
+// Documents performs operations on a multiple documents.
 type Documents struct {
 	client Client
 	coll   Collection
-}
-
-type DocumentData struct {
-	ID          string `json:"id"`
-	Rid         string `json:"_rid"`
-	Self        string `json:"_self"`
-	Etag        string `json:"_etag"`
-	Ts          int    `json:"_ts"`
-	Attachments string `json:"_attachments"`
-}
-
-type ListCosmosDocument struct {
-	Rid       string      `json:"_rid"`
-	Documents interface{} `json:"Documents"`
-	Count     int         `json:"_count"`
 }
 
 func newDocument(coll Collection, docID string) *Document {
@@ -61,11 +48,29 @@ func newDocuments(coll Collection) *Documents {
 	return docs
 }
 
+// Create new document
 func (d *Documents) Create(doc interface{}, opts ...CallOption) (*Response, error) {
 	d.client.createIDIfNotSet(doc)
 	return d.client.create(doc, &doc, opts...)
 }
 
+// Read document
+func (d Document) Read(ret interface{}, opts ...CallOption) (*Response, error) {
+	return d.client.read(ret, opts...)
+}
+
+// Replace existing document
+func (d *Document) Replace(doc interface{}, ret interface{}, opts ...CallOption) (*Response, error) {
+	d.client.createIDIfNotSet(doc)
+	return d.client.replace(doc, ret, opts...)
+}
+
+// Delete document
+func (d Document) Delete(opts ...CallOption) (*Response, error) {
+	return d.client.delete(opts...)
+}
+
+// ReadAll returns all documents in collection.
 func (d *Documents) ReadAll(docs interface{}, opts ...CallOption) (*Response, error) {
 	data := struct {
 		Documents interface{} `json:"Documents,omitempty"`
@@ -75,10 +80,7 @@ func (d *Documents) ReadAll(docs interface{}, opts ...CallOption) (*Response, er
 	return res, err
 }
 
-func (doc Document) Read(ret interface{}, opts ...CallOption) (*Response, error) {
-	return doc.client.read(ret, opts...)
-}
-
+// Query documents
 func (d Documents) Query(query *SqlQuerySpec, docs interface{}, opts ...CallOption) (*Response, error) {
 	data := struct {
 		Documents interface{} `json:"Documents,omitempty"`
@@ -86,13 +88,4 @@ func (d Documents) Query(query *SqlQuerySpec, docs interface{}, opts ...CallOpti
 	}{Documents: docs}
 	res, err := d.client.query(query, &data, opts...)
 	return res, err
-}
-
-func (d *Document) Replace(doc interface{}, ret interface{}, opts ...CallOption) (*Response, error) {
-	d.client.createIDIfNotSet(doc)
-	return d.client.replace(doc, ret, opts...)
-}
-
-func (d Document) Delete(opts ...CallOption) (*Response, error) {
-	return d.client.delete(opts...)
 }

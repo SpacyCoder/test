@@ -1,4 +1,4 @@
-# Cosmosdb GO sdk 
+# CosmosDB GO sdk 
 
 - [Installation](#installation)
 - [Usage](#usage)

@@ -22,8 +22,10 @@ const (
 	Eventual Consistency = "eventual"
 )
 
+// CallOption type defenition.
 type CallOption func(r *Request) error
 
+// PartitionKey sets partition for request
 func PartitionKey(partitionKey interface{}) CallOption {
 	var pk []byte
 	var err error
@@ -46,6 +48,7 @@ func PartitionKey(partitionKey interface{}) CallOption {
 	}
 }
 
+// Continuation sets continuation token for request
 func Continuation(continuation string) CallOption {
 	return func(r *Request) error {
 		if continuation == "" {

@@ -1,35 +1,22 @@
 package cosmos
 
-type DatabaseData struct {
-	ID    string `json:"id"`
-	Rid   string `json:"_rid"`
-	Ts    int    `json:"_ts"`
-	Self  string `json:"_self"`
-	Etag  string `json:"_etag"`
-	Colls string `json:"_colls"`
-	Users string `json:"_users"`
-}
-
-// ListDatabaseData is the struct of a Database Repsonse
-type ListDatabaseData struct {
-	Rid       string         `json:"_rid"`
-	Count     int            `json:"_count"`
-	Databases []DatabaseData `json:"Databases"`
-}
-
+// Database performs operations on a single database
 type Database struct {
 	client Client
 	dbID   string
 }
 
+// Databases performs operations on databases
 type Databases struct {
 	client *Client
 }
 
+// User operations
 func (d Database) User(id string) *User {
 	return newUser(d, id)
 }
 
+// Users operations
 func (d Database) Users() *Users {
 	return newUsers(d)
 }
@@ -42,7 +29,6 @@ func newDatabase(client Client, dbID string) *Database {
 		client: client,
 		dbID:   dbID,
 	}
-
 	return db
 }
 
@@ -54,70 +40,69 @@ func newDatabases(c *Client) *Databases {
 	dbs := &Databases{
 		client: c,
 	}
-
 	return dbs
 }
 
-func (db Database) Collection(collID string) *Collection {
-	return newCollection(db, collID)
+// Collection gets a handle for a given collection in a database
+func (d Database) Collection(collID string) *Collection {
+	return newCollection(d, collID)
 }
 
-func (db Database) Collections() *Collections {
-	return newCollections(db)
+// Collections gets a handle for doing operations on all collections in a database
+func (d Database) Collections() *Collections {
+	return newCollections(d)
+}
+
+// Read database
+func (d *Database) Read() (*DatabaseDefinition, error) {
+	ret := &DatabaseDefinition{}
+	_, err := d.client.read(ret)
+	return ret, err
+}
+
+// Delete database
+func (d *Database) Delete() (*Response, error) {
+	return d.client.delete()
 }
 
 // Create a new database
-func (db Databases) Create(dbID string, opts ...CallOption) (*DatabaseDefinition, error) {
+func (d *Databases) Create(dbID string, opts ...CallOption) (*DatabaseDefinition, error) {
 	dbDef := &DatabaseDefinition{}
 	var body struct {
 		ID string `json:"id"`
 	}
 	body.ID = dbID
 
-	_, err := db.client.create(body, dbDef, opts...)
+	_, err := d.client.create(body, dbDef, opts...)
 	if err != nil {
 		return nil, err
 	}
-
 	return dbDef, err
 }
 
 // ReadAll databases
-func (db *Databases) ReadAll(opts ...CallOption) (*DatabaseDefinitions, error) {
+func (d *Databases) ReadAll(opts ...CallOption) (*DatabaseDefinitions, error) {
 	data := struct {
 		Databases DatabaseDefinitions `json:"Databases,omitempty"`
 		Count     int                 `json:"_count,omitempty"`
 	}{}
-	_, err := db.client.read(&data, opts...)
-
+	_, err := d.client.read(&data, opts...)
 	if err != nil {
 		return nil, err
 	}
-
 	return &data.Databases, err
 }
 
-func (db *Database) Read() (*DatabaseDefinition, error) {
-	ret := &DatabaseDefinition{}
-	_, err := db.client.read(ret)
-	return ret, err
-}
-
-func (db *Database) Delete() (*Response, error) {
-	return db.client.delete()
-}
-
-func (db *Databases) Query(query *SqlQuerySpec, opts ...CallOption) (*DatabaseDefinitions, error) {
+// Query databases
+func (d *Databases) Query(query *SqlQuerySpec, opts ...CallOption) (*DatabaseDefinitions, error) {
 	data := struct {
 		Databases DatabaseDefinitions `json:"Databases,omitempty"`
 		Count     int                 `json:"_count,omitempty"`
 	}{}
 
-	_, err := db.client.query(query, &data, opts...)
-
+	_, err := d.client.query(query, &data, opts...)
 	if err != nil {
 		return nil, err
 	}
-
 	return &data.Databases, err
 }

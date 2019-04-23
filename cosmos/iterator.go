@@ -1,5 +1,6 @@
 package cosmos
 
+// Iterator used to iterate through documents.
 type Iterator struct {
 	continuationToken string
 	err               error
