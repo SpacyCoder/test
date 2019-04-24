@@ -2,14 +2,19 @@ package cosmos
 
 import "fmt"
 
+type CosmosErrorMessage struct {
+	Code    string `json:"code"`
+	Message string `json:"message"`
+}
+
 // Error reports cosmos related errors.
 type Error struct {
-	message    string
+	message    *CosmosErrorMessage
 	statusCode int
 }
 
 // NewCosmosError creates a new cosmos error struct
-func NewCosmosError(message string, statusCode int) *Error {
+func NewCosmosError(message *CosmosErrorMessage, statusCode int) *Error {
 	return &Error{
 		message:    message,
 		statusCode: statusCode,
@@ -18,7 +23,7 @@ func NewCosmosError(message string, statusCode int) *Error {
 
 // Error implements the error interface
 func (e *Error) Error() string {
-	return fmt.Sprintf("%v, %v", e.statusCode, e.message)
+	return fmt.Sprintf("%v, %v", e.statusCode, e.message.Code, e.message.Message)
 }
 
 // StatusCode returns status code.
