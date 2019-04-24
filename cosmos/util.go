@@ -12,7 +12,8 @@ type Coordinate [2]float64
 type Coordinates []Coordinate
 
 type Geometry interface {
-	Coords() *Coordinates
+	GeoType() string
+	Coords() interface{}
 }
 
 // LineString struct defines a line string
@@ -36,6 +37,10 @@ func (l *LineString) Coords() *Coordinates {
 	return &l.Coordinates
 }
 
+func (l *LineString) GeoType() string {
+	return l.Type
+}
+
 type Polygon struct {
 	Type        string      `json:"type"`
 	Coordinates Coordinates `json:"coordinates"`
@@ -43,8 +48,8 @@ type Polygon struct {
 
 // NewPolygon creates a new Polygon struct.
 func NewPolygon(coords ...Coordinate) *Polygon {
-	line := &Polygon{Type: "Polygon", Coordinates: coords}
-	return line
+	polygon := &Polygon{Type: "Polygon", Coordinates: coords}
+	return polygon
 }
 
 func (p *Polygon) AddPoint(lon, lat float64) {
@@ -53,4 +58,27 @@ func (p *Polygon) AddPoint(lon, lat float64) {
 
 func (p *Polygon) Coords() *Coordinates {
 	return &p.Coordinates
+}
+
+func (p *Polygon) GeoType() string {
+	return p.Type
+}
+
+type Point struct {
+	Type        string     `json:"type"`
+	Coordinates Coordinate `json:"coordinates"`
+}
+
+// NewPoint creates a new point struct and returns it.
+func NewPoint(coords Coordinate) *Point {
+	line := &Point{Type: "Point", Coordinates: coords}
+	return line
+}
+
+func (p *Point) Coords() *Coordinate {
+	return &p.Coordinates
+}
+
+func (p *Point) GeoType() string {
+	return p.Type
 }
