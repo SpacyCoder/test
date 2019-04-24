@@ -141,5 +141,5 @@ type QueryParam struct {
 
 type SqlQuerySpec struct {
 	Query      string       `json:"query"`
-	Parameters []QueryParam `json:"parameters"`
+	Parameters []QueryParam `json:"parameters,omitempty"`
 }
