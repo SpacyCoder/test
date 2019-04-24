@@ -95,10 +95,6 @@ func (c *Client) query(query *SqlQuerySpec, body interface{}, opts ...CallOption
 	return c.do(r, expectStatusCode(http.StatusOK), body)
 }
 
-func queryEncode() {
-
-}
-
 func (c *Client) read(ret interface{}, opts ...CallOption) (*Response, error) {
 	buf := buffers.Get().(*bytes.Buffer)
 	buf.Reset()
@@ -167,9 +163,9 @@ func (c *Client) do(r *Request, validator statusCodeValidatorFunc, respBody inte
 
 	// Check if response has expected status code.
 	if !validator(resp.StatusCode) {
-		var errBody string
-		readJSON(resp.Body, &errBody)
-		return &Response{resp.Header}, NewCosmosError(errBody, resp.StatusCode)
+		var errorMessage CosmosErrorMessage
+		readJSON(resp.Body, &errorMessage)
+		return &Response{resp.Header}, NewCosmosError(&errorMessage, resp.StatusCode)
 	}
 
 	if respBody == nil {
