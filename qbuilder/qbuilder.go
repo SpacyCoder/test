@@ -12,6 +12,7 @@ type QueryBuilder struct {
 	from       string
 	conditions []Condition
 	params     []cosmos.QueryParam
+	orderBy    string
 }
 
 // New creates a new QueryBuilder
@@ -54,6 +55,11 @@ func (qb *QueryBuilder) Params(params ...cosmos.QueryParam) *QueryBuilder {
 	return qb
 }
 
+func (qb *QueryBuilder) OrderBy(orderBy string) *QueryBuilder {
+	qb.orderBy = orderBy
+	return qb
+}
+
 func (qb *QueryBuilder) Build() *cosmos.SqlQuerySpec {
 	query := "SELECT "
 	for i, s := range qb.selectors {
@@ -78,5 +84,6 @@ func (qb *QueryBuilder) Build() *cosmos.SqlQuerySpec {
 		}
 	}
 
+	query += " " + qb.orderBy
 	return cosmos.Q(query, qb.params...)
 }
