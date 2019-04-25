@@ -13,7 +13,6 @@ type Coordinates []Coordinate
 
 type Geometry interface {
 	GeoType() string
-	Coords() interface{}
 }
 
 // LineString struct defines a line string
