@@ -15,6 +15,12 @@ func (r *Response) Continuation() string {
 	return r.Header.Get(HeaderContinuation)
 }
 
+// RetryAfterMs returns the number of seconds until you can try to send the response again
+// only applicable to status code 429 To Many Requests
+func (r *Response) RetryAfterMs() string {
+	return r.Header.Get(HeaderRetryAfterMs)
+}
+
 type statusCodeValidatorFunc func(statusCode int) bool
 
 func expectStatusCode(expected int) statusCodeValidatorFunc {
