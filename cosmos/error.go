@@ -77,6 +77,11 @@ func (e *Error) EntityTooLarge() bool {
 	return e.statusCode == 413
 }
 
+// The collection has exceeded the provisioned throughput limit. Retry the request after the server specified retry after duration.
+func (e *Error) TooManyRequests() bool {
+	return e.statusCode == 429
+}
+
 // RetryWith returns true if the operation encountered a transient error. This code only occurs on write operations. It is safe to retry the operation.
 func (e *Error) RetryWith() bool {
 	return e.statusCode == 449
