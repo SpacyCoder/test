@@ -84,6 +84,6 @@ func (qb *QueryBuilder) Build() *cosmos.SqlQuerySpec {
 		}
 	}
 
-	query += " ORDER BY" + qb.orderBy
+	query += " ORDER BY " + qb.orderBy
 	return cosmos.Q(query, qb.params...)
 }
