@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/SpacyCoder/test/cosmos"
+	"github.com/spacycoder/test/cosmos"
 )
 
 func TestQueryBuilder(t *testing.T) {
