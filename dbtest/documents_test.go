@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/SpacyCoder/test/cosmos"
+	"github.com/spacycoder/test/cosmos"
 )
 
 func getClient() (*cosmos.Client, error) {
