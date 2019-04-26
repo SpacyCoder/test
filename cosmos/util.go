@@ -41,22 +41,18 @@ func (l *LineString) GeoType() string {
 }
 
 type Polygon struct {
-	Type        string      `json:"type"`
-	Coordinates Coordinates `json:"coordinates"`
+	Type        string        `json:"type"`
+	Coordinates []Coordinates `json:"coordinates"`
 }
 
 // NewPolygon creates a new Polygon struct.
-func NewPolygon(coords ...Coordinate) *Polygon {
+func NewPolygon(coords ...Coordinates) *Polygon {
 	polygon := &Polygon{Type: "Polygon", Coordinates: coords}
 	return polygon
 }
 
-func (p *Polygon) AddPoint(lon, lat float64) {
-	p.Coordinates = append(p.Coordinates, Coordinate{lon, lat})
-}
-
-func (p *Polygon) Coords() *Coordinates {
-	return &p.Coordinates
+func (p *Polygon) Coords() []Coordinates {
+	return p.Coordinates
 }
 
 func (p *Polygon) GeoType() string {
