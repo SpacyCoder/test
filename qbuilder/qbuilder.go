@@ -1,6 +1,6 @@
 package qbuilder
 
-import "github.com/SpacyCoder/test/cosmos"
+import "github.com/spacycoder/test/cosmos"
 
 type Condition struct {
 	ConditionType string
