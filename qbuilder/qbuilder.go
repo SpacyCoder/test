@@ -56,7 +56,7 @@ func (qb *QueryBuilder) Params(params ...cosmos.QueryParam) *QueryBuilder {
 }
 
 func (qb *QueryBuilder) OrderBy(orderBy string) *QueryBuilder {
-	qb.orderBy = " ORDER BY " + qb.orderBy
+	qb.orderBy = " ORDER BY " + orderBy
 	return qb
 }
 
