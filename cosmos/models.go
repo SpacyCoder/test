@@ -133,13 +133,3 @@ type MsToken struct {
 		Max string `json:"max"`
 	} `json:"range"`
 }
-
-type QueryParam struct {
-	Name  string      `json:"name"`
-	Value interface{} `json:"value"`
-}
-
-type SqlQuerySpec struct {
-	Query      string       `json:"query"`
-	Parameters []QueryParam `json:"parameters,omitempty"`
-}

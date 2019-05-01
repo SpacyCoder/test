@@ -1,11 +1,5 @@
 package cosmos
 
-func Q(query string, queryParams ...QueryParam) *SqlQuerySpec {
-	return &SqlQuerySpec{Query: query, Parameters: queryParams}
-}
-
-type P = QueryParam
-
 // Coordinate = [lon, lat]
 type Coordinate [2]float64
 

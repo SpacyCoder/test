@@ -29,7 +29,7 @@ func (c *Client) getURL() string {
 
 var buffers = &sync.Pool{
 	New: func() interface{} {
-		return bytes.NewBuffer([]byte{})
+		return new(bytes.Buffer)
 	},
 }
 
