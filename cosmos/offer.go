@@ -26,7 +26,6 @@ func newOffer(client Client, offerID string) *Offer {
 	client.path = "offers/" + offerID
 	client.rType = "offers"
 	client.rLink = offerID
-	fmt.Println("URL", client.getURL())
 	offer := &Offer{
 		client:  client,
 		offerID: offerID,
@@ -38,6 +37,7 @@ func newOffer(client Client, offerID string) *Offer {
 func newOffers(client Client) *Offers {
 	client.path = "offers"
 	client.rType = "offers"
+	fmt.Println("URL", client.getURL())
 	offers := &Offers{
 		client: client,
 	}
@@ -46,13 +46,12 @@ func newOffers(client Client) *Offers {
 }
 
 func (u *Offers) Query(query *SqlQuerySpec, opts ...CallOption) ([]OfferDefinition, error) {
-	var offers []OfferDefinition
-	_, err := u.client.query(query, &offers, opts...)
-	if err != nil {
-		return nil, err
-	}
-
-	return offers, err
+	data := struct {
+		Offers []OfferDefinition `json:"Offers,omitempty"`
+		Count  int               `json:"_count,omitempty"`
+	}{}
+	_, err := u.client.query(query, &data, opts...)
+	return data.Offers, err
 }
 
 func (u *Offer) Replace(offer *OfferDefinition, opts ...CallOption) (*OfferDefinition, error) {
@@ -79,7 +78,7 @@ func (o *Offers) ReadAll(opts ...CallOption) ([]OfferDefinition, error) {
 }
 
 func (o *Offer) Read(opts ...CallOption) (*OfferDefinition, error) {
-	var offer *OfferDefinition
-	_, err := o.client.read(offer, opts...)
-	return offer, err
+	var offer OfferDefinition
+	_, err := o.client.read(&offer, opts...)
+	return &offer, err
 }

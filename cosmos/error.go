@@ -23,7 +23,7 @@ func NewCosmosError(message *CosmosErrorMessage, statusCode int) *Error {
 
 // Error implements the error interface
 func (e *Error) Error() string {
-	return fmt.Sprintf("%v, %v", e.statusCode, e.message.Code, e.message.Message)
+	return fmt.Sprintf("%d, %s, %s", e.statusCode, e.message.Code, e.message.Message)
 }
 
 // StatusCode returns status code.

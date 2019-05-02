@@ -94,7 +94,7 @@ func (c *Collections) ReadAll() (*CollectionDefinitions, error) {
 		Collections CollectionDefinitions `json:"DocumentCollections,omitempty"`
 		Count       int                   `json:"_count,omitempty"`
 	}{}
-	_, err := c.client.read(data)
+	_, err := c.client.read(&data)
 	return &data.Collections, err
 }
 
