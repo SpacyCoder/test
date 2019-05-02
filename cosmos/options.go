@@ -142,3 +142,13 @@ func Limit(limit int) CallOption {
 		return nil
 	}
 }
+
+// Sets headers necessary for doing a query
+func queryHeaders(len int) CallOption {
+	return func(r *Request) error {
+		r.Header.Set(HeaderContentType, "application/query+json")
+		r.Header.Set(HeaderIsQuery, "true")
+		r.Header.Set(HeaderContentLength, strconv.Itoa(len))
+		return nil
+	}
+}

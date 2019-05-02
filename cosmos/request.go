@@ -1,7 +1,6 @@
 package cosmos
 
 import (
-	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
@@ -50,11 +49,11 @@ func ResourceRequest(rLink, rType string, req *http.Request) *Request {
 
 // Add 3 default headers to *Request
 // "x-ms-date", "x-ms-version", "authorization"
-func (req *Request) DefaultHeaders(mKey string) (err error) {
+func (req *Request) DefaultHeaders(mKey string) {
 	req.Header.Add(HeaderXDate, formatDate(time.Now()))
 	req.Header.Add(HeaderVersion, SupportedVersion)
 
-	b := buffers.Get().(*bytes.Buffer)
+	b := buffers.Get()
 	b.Reset()
 	b.WriteString(strings.ToLower(req.Method))
 	b.WriteRune('\n')
@@ -68,15 +67,9 @@ func (req *Request) DefaultHeaders(mKey string) (err error) {
 	b.WriteRune('\n')
 
 	token := GenerateAuthToken(b.Bytes(), mKey)
-	if err != nil {
-		return err
-	}
-
 	buffers.Put(b)
 
 	req.Header.Add(HeaderAuth, token)
-
-	return
 }
 
 func GenerateAuthToken(bytesToSign []byte, mkey string) string {

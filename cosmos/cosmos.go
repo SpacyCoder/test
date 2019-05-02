@@ -3,11 +3,9 @@ package cosmos
 import (
 	"bytes"
 	"errors"
-	"io"
 	"net/http"
 	"reflect"
 	"strings"
-	"sync"
 
 	"github.com/google/uuid"
 )
@@ -25,12 +23,6 @@ type Client struct {
 
 func (c *Client) getURL() string {
 	return c.domain + c.path
-}
-
-var buffers = &sync.Pool{
-	New: func() interface{} {
-		return new(bytes.Buffer)
-	},
 }
 
 // New create a new CosmosDB instance
@@ -72,36 +64,20 @@ func (c *Client) Databases() *Databases {
 }
 
 func (c *Client) query(query *SqlQuerySpec, body interface{}, opts ...CallOption) (*Response, error) {
-	buf := buffers.Get().(*bytes.Buffer)
-	var err error
-	buf.Reset()
+	buf := buffers.Get()
 	defer buffers.Put(buf)
-
-	if err = Serialization.EncoderFactory(buf).Encode(query); err != nil {
+	if err := Serialization.EncoderFactory(buf).Encode(query); err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodPost, c.getURL(), buf)
-	if err != nil {
-		return nil, err
-	}
-
-	r := ResourceRequest(c.rLink, c.rType, req)
-	if err = c.apply(r, opts); err != nil {
-		return nil, err
-	}
-
-	r.QueryHeaders(buf.Len())
-	return c.do(r, expectStatusCode(http.StatusOK), body)
+	opts = append(opts, queryHeaders(buf.Len()))
+	return c.do(http.MethodPost, expectStatusCode(http.StatusOK), body, buf, opts...)
 }
 
 func (c *Client) read(ret interface{}, opts ...CallOption) (*Response, error) {
-	buf := buffers.Get().(*bytes.Buffer)
-	buf.Reset()
-	res, err := c.method(http.MethodGet, expectStatusCode(http.StatusOK), ret, buf, opts...)
-
-	buffers.Put(buf)
-	return res, err
+	buf := buffers.Get()
+	defer buffers.Put(buf)
+	return c.do(http.MethodGet, expectStatusCode(http.StatusOK), ret, buf, opts...)
 }
 
 // Create resource
@@ -111,7 +87,7 @@ func (c *Client) create(body, ret interface{}, opts ...CallOption) (*Response, e
 		return nil, err
 	}
 	buf := bytes.NewBuffer(data)
-	return c.method(http.MethodPost, expectStatusCodeXX(http.StatusOK), ret, buf, opts...)
+	return c.do(http.MethodPost, expectStatusCodeXX(http.StatusOK), ret, buf, opts...)
 }
 
 // Replace resource
@@ -121,12 +97,12 @@ func (c *Client) replace(body, ret interface{}, opts ...CallOption) (*Response, 
 		return nil, err
 	}
 	buf := bytes.NewBuffer(data)
-	return c.method(http.MethodPut, expectStatusCode(http.StatusOK), ret, buf, opts...)
+	return c.do(http.MethodPut, expectStatusCode(http.StatusOK), ret, buf, opts...)
 }
 
 // Delete resource
 func (c *Client) delete(opts ...CallOption) (*Response, error) {
-	return c.method(http.MethodDelete, expectStatusCode(http.StatusNoContent), nil, &bytes.Buffer{}, opts...)
+	return c.do(http.MethodDelete, expectStatusCode(http.StatusNoContent), nil, &bytes.Buffer{}, opts...)
 }
 
 func (c *Client) execute(body, ret interface{}, opts ...CallOption) (*Response, error) {
@@ -135,10 +111,11 @@ func (c *Client) execute(body, ret interface{}, opts ...CallOption) (*Response, 
 		return nil, err
 	}
 	buf := bytes.NewBuffer(data)
-	return c.method(http.MethodPost, expectStatusCode(http.StatusOK), ret, buf, opts...)
+	return c.do(http.MethodPost, expectStatusCode(http.StatusOK), ret, buf, opts...)
 }
 
-func (c *Client) method(method string, validator statusCodeValidatorFunc, ret interface{}, data *bytes.Buffer, opts ...CallOption) (*Response, error) {
+// do sends request to cosmos, validates the response and returns is.
+func (c *Client) do(method string, validator statusCodeValidatorFunc, respBody interface{}, data *bytes.Buffer, opts ...CallOption) (*Response, error) {
 	req, err := http.NewRequest(method, c.getURL(), data)
 	if err != nil {
 		return nil, err
@@ -150,15 +127,11 @@ func (c *Client) method(method string, validator statusCodeValidatorFunc, ret in
 		return nil, err
 	}
 
-	return c.do(r, validator, ret)
-}
-
-// do sends request to cosmos, validates the response and returns is.
-func (c *Client) do(r *Request, validator statusCodeValidatorFunc, respBody interface{}) (*Response, error) {
 	resp, err := c.httpClient.Do(r.Request)
 	if err != nil {
 		return nil, err
 	}
+
 	defer resp.Body.Close()
 
 	// Check if response has expected status code.
@@ -174,16 +147,9 @@ func (c *Client) do(r *Request, validator statusCodeValidatorFunc, respBody inte
 	return &Response{resp.Header}, readJSON(resp.Body, respBody)
 }
 
-// readJSON response to given interface(struct, map, ..)
-func readJSON(reader io.Reader, data interface{}) error {
-	return Serialization.DecoderFactory(reader).Decode(&data)
-}
-
 // apply sets default headers and all call options given.
 func (c *Client) apply(r *Request, opts []CallOption) (err error) {
-	if err = r.DefaultHeaders(c.key); err != nil {
-		return err
-	}
+	r.DefaultHeaders(c.key)
 
 	for i := 0; i < len(opts); i++ {
 		if err = opts[i](r); err != nil {

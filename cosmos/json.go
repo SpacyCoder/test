@@ -50,3 +50,8 @@ var DefaultSerialization = SerializationDriver{
 
 // Serialization holds driver that is actually used
 var Serialization = DefaultSerialization
+
+// readJSON response to given interface(struct, map, ..)
+func readJSON(reader io.Reader, data interface{}) error {
+	return Serialization.DecoderFactory(reader).Decode(&data)
+}
